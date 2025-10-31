@@ -7,9 +7,6 @@ from src.main.api.requests.requester import Requester
 
 class GetTransactionsRequester(Requester):
 
-    def post(self, model):  # type: ignore[override]
-        raise NotImplementedError("GetTransactionsRequester only supports GET requests")
-
     def get(self, account_id: int) -> Union[List[Dict[str, Any]], Dict[str, Any], str]:
         url = f"{self.base_url}/accounts/{account_id}/transactions"
         response = requests.get(url=url, headers=self.headers)
