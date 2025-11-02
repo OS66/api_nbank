@@ -16,22 +16,21 @@ from src.main.api.requests.create_account_requester import CreateAccountRequeste
 from src.main.api.specs.request_spec import RequestSpec
 from src.main.api.specs.response_spec import ResponseSpec
 from src.main.api.requests.admin_user_requester import AdminUserRequester
+from src.main.api.requests.get_accounts_requester import GetAccountsRequester
 
 from src.main.api.generators.random_data import RandomData
 
 
 class TestTransfer:
-
-    @pytest.mark.trans
+    @pytest.mark.test
     @pytest.mark.parametrize("username, password, role, amount,  transfer_amount",
-                             [(RandomData.get_username(), RandomData.get_password(), "USER", 400.0, 300.5)])
+                             [(RandomData.get_username(), RandomData.get_password(), "USER", 600, 105)])
     def test_create_transfer(self, username, password, role, amount, transfer_amount):
-        create_user_request = CreateUserRequest(
-            username=username, password=password, role=role)
+
+        create_user_request = CreateUserRequest(username=username, password=password, role=role)
         create_user_response = AdminUserRequester(
             RequestSpec.admin_auth_spec(),
-            ResponseSpec.entity_was_created()
-        ).post(create_user_request)
+            ResponseSpec.entity_was_created()).post(create_user_request)
 
         assert create_user_response.username == create_user_request.username
         assert create_user_response.role == create_user_request.role
@@ -39,54 +38,97 @@ class TestTransfer:
         source_account_response = CreateAccountRequester(
             RequestSpec.user_auth_spec(
                 create_user_request.username, create_user_request.password),
-            ResponseSpec.entity_was_created(),
-        ).post()
+            ResponseSpec.entity_was_created(),).post()
         assert source_account_response.balance == 0.0
 
         target_account_response = CreateAccountRequester(
             RequestSpec.user_auth_spec(
                 create_user_request.username, create_user_request.password),
-            ResponseSpec.entity_was_created(),
-        ).post()
+            ResponseSpec.entity_was_created(),).post()
         assert target_account_response.balance == 0.0
 
         source_account_id = source_account_response.id
         target_account_id = target_account_response.id
-        logging.info(
-            f'first account id: {source_account_response.id} second   accound id: {target_account_response.id}')
-
-        deposit_request = CreateDepositRequest(
-            id=source_account_id, balance=amount)
+        logging.info(f'first account id: {source_account_response.id} second   accound id: {target_account_response.id}')
+        
+        #new deposit
+        deposit_request = CreateDepositRequest(id=source_account_id, balance=amount)
         CreateDepositRequester(
             RequestSpec.user_auth_spec(username, password),
-            ResponseSpec.request_return_ok(),
-        ).post(deposit_request)
+            ResponseSpec.request_return_ok(),).post(deposit_request)
+        assert deposit_request.balance == amount
 
+        #check deposit
+        response_get_deposit= GetAccountsRequester(
+            RequestSpec.user_auth_spec(username,password),
+            ResponseSpec.request_return_ok()).get()
+
+        logging.info(f'response_get_deposit~!!!!!!!!: {response_get_deposit.dict()}')
+
+
+        start_balances= {}
+        for i in response_get_deposit.accounts:
+            account_id =  i['id']
+            account_balance = i['balance']
+            start_balances[account_id] = account_balance 
+
+        assert start_balances[source_account_id] == deposit_request.balance
+
+
+        #new transfer
         transfer_request = CreateTransferRequest(
             senderAccountId=source_account_id,
             receiverAccountId=target_account_id,
             amount=transfer_amount,
         )
-
         transfer_response = CreateTransferRequester(
             RequestSpec.user_auth_spec(username, password),
-            ResponseSpec.request_return_ok(),
-        ).post(transfer_request)
+            ResponseSpec.request_return_ok(),).post(transfer_request)
 
         assert transfer_response.get('amount') == transfer_amount
 
-        logging.info(
-            f'Transfer from account id: {source_account_response.id}, amount {amount} to  the  second accound id: {target_account_response.id}  with {transfer_amount} ')
+        logging.info(f'Transfer from account id: {source_account_response.id}, amount {amount} to  the  second accound id: {target_account_response.id}  with {transfer_amount} ')
 
+
+        #check_transactions
         transactions = GetTransactionsRequester(
             RequestSpec.user_auth_spec(username, password),
-            ResponseSpec.request_return_ok(),
-        ).get(source_account_id)
-
-        assert isinstance(transactions, list)
-        assert any(t.get("amount") == transfer_amount for t in transactions)
-
+            ResponseSpec.request_return_ok(),).get(source_account_id)
         logging.info(f'List og transactions {transactions}')
+
+
+        #check 2 balances
+        response_get_account= GetAccountsRequester(
+            RequestSpec.user_auth_spec(username,password),
+            ResponseSpec.request_return_ok()).get()
+
+        logging.info(f'response_get_account: {response_get_account.dict()}')
+
+
+        balances= {}
+        for i in response_get_account.accounts:
+            account_id =  i['id']
+            account_balance = i['balance']
+            balances[account_id] = account_balance 
+
+        assert balances[source_account_id] == amount - transfer_amount 
+        assert balances[target_account_id] == transfer_amount   
+
+
+
+
+        
+
+
+
+
+
+
+
+
+
+
+
 
     @pytest.mark.trans_invalid
     @pytest.mark.parametrize(

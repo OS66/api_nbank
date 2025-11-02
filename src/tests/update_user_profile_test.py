@@ -8,13 +8,15 @@ from src.main.api.specs.request_spec import RequestSpec
 from src.main.api.requests.admin_user_requester import AdminUserRequester
 from src.main.api.requests.login_user_requester import LoginUserRequester
 from src.main.api.requests.update_user_requester import UpdateProfileRequester
+from src.main.api.requests.get_profile_requester import GetProfileRequester
 
 import pytest
 import logging
+import requests
 
 
 class TestUpdateProfile():
-   
+    
     @pytest.mark.parametrize(
         "username, password, role, name",
         [(RandomData.get_username(), RandomData.get_password(),
@@ -30,28 +32,49 @@ class TestUpdateProfile():
 
         assert create_user_response.username == create_user_request.username
 
+
         login_user_request = LoginUserRequest(
             username=username, password=password)
         login_user_response = LoginUserRequester(
             RequestSpec.unauth_spec(),
             ResponseSpec.request_return_ok()
             ).post(login_user_request)
-
         assert login_user_request.username == login_user_response.username
-
+     
+    
         update_profile_payload = UpdateProfileRequest(name=name)
         update_profile_response = UpdateProfileRequester(
             RequestSpec.user_auth_spec(username, password),
             ResponseSpec.request_return_ok(),
         ).put(update_profile_payload.model_dump())
 
-        assert update_profile_response.customer.get(
-            "name") == update_profile_payload.name
-        logging.info(
-            f'Old name "{login_user_request.username}" and new name "{update_profile_payload.name}"')
+        logging.info(update_profile_response.dict(),update_profile_payload.dict())
+        logging.info(f'For username "{login_user_request.username}" will  be a new name "{update_profile_payload.name}"')
+        assert update_profile_response.customer["name"] == update_profile_payload.name
+
+        get_profile_response = GetProfileRequester(
+            RequestSpec.user_auth_spec(username, password),
+            ResponseSpec.request_return_ok()
+        ).get()
 
 
-    @pytest.mark.test
+        logging.info(get_profile_response.dict())
+        assert  get_profile_response.username == login_user_request.username
+
+
+
+
+    
+
+
+        
+
+
+
+
+
+
+    
     @pytest.mark.parametrize(
         "name, password, role,username, error_key, error_value",
         [("John", RandomData.get_password(), "USER", RandomData.get_name(),"username","Username must contain only letters, digits, dashes, underscores, and dots"),

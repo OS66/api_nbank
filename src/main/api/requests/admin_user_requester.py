@@ -23,3 +23,6 @@ class AdminUserRequester(Requester):
         response = requests.delete(url=url, headers=self.headers)
         self.response_spec(response)
         return response    
+
+    def get(self, *args, **kwargs):
+         raise NotImplementedError("AdminUserRequester no GET")    

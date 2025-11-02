@@ -11,7 +11,10 @@ class Requester(ABC):
         self.base_url  = Config.get("backendUrl")
         self.response_spec = response_spec
 
-    @abstractmethod
-    def post(self, model:BaseModel): ...
+    # @abstractmethod
+    # def post(self, model:BaseModel): ...
+
+    # @abstractmethod
+    # def get(self, model:BaseModel): ...
 
 
