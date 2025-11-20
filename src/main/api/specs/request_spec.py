@@ -38,7 +38,7 @@ class RequestSpec:
         if response.status_code == 200:
             headers = RequestSpec.default_req_headers()
             headers['Authorization'] = response.headers.get('Authorization')
-            return {
+            return { 
                 'headers' : headers,
                 'base_url': Config.get("backendUrl")
             }
