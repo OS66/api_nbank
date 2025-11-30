@@ -1,4 +1,5 @@
 import pytest
+from playwright.sync_api import sync_playwright
 
 from src.main.api.requests.admin_user_requester import AdminUserRequester
 from src.main.api.requests.login_user_requester import LoginUserRequester
@@ -7,7 +8,19 @@ from src.main.api.specs.response_spec import  ResponseSpec
 from src.main.api.generators.random_data import RandomData
 from src.main.api.models.create_user_request import CreateUserRequest
 from src.main.api.models.login_user_request import LoginUserRequest
+from src.main.api.configs.config import Config
 
+
+
+@pytest.fixture
+def page():
+    with sync_playwright() as p:
+        browser = p.chromium.launch()
+        page = browser.new_page()
+        page.goto(Config.get("frontendUrl"))
+        yield page
+        page.close()
+        browser.close()
 
 
 @pytest.fixture(scope="session")

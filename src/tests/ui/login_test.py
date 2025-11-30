@@ -1,60 +1,36 @@
 from playwright.sync_api import sync_playwright
+from src.main.ui.pages.login_page import LoginPage
+from src.main.ui.pages.user_panel import UserPanel
+from src.main.ui.pages.admin_panel import AdminPanel
+
 import pytest
 import logging
 import time
 
 
-
-
 class TestLogin:
-    BASE_URL = 'http://localhost:3000/'
-
     
-    def test_admin_login(self, admin_credentials):
+    def test_admin_login(self, admin_credentials, page):
+
         adm_username, adm_password = admin_credentials
-        with sync_playwright() as p:
-            browser = p.chromium.launch(headless=False)
-            page = browser.new_page()
-            page.goto(url=self.BASE_URL)
+        assert page.title() == 'NoBugs Bank'
 
-            assert page.title() == 'NoBugs Bank'
+        LoginPage(page).login(adm_username,adm_password)
+        AdminPanel(page).check_admin_title()
 
-            logging.info(f"\nThere is a Title : {page.title()}\n")
-            username_form = page.get_by_placeholder('Username').fill(adm_username)
-            password_form = page.get_by_placeholder('Password').fill(adm_password)
-            login_button = page.locator("button:has-text('Login')").click()
-          
-            page.get_by_text('Admin Panel').wait_for()
-
-
-            browser.close()
+        assert AdminPanel(page).title.is_visible()
 
 
    
-    def test_user_login(self, user_credentials):
+    def test_user_login(self, user_credentials, page):
         user_username, user_password = user_credentials
-        with sync_playwright() as p:
-            browser = p.chromium.launch(headless=False)
-            page = browser.new_page()
-            page.goto(url=self.BASE_URL)
+        assert page.title() == 'NoBugs Bank'
+        LoginPage(page).login(user_username,user_password)
+        UserPanel(page).check_title_noname()
 
-            assert page.title() == 'NoBugs Bank'
+        assert UserPanel(page).noname_title.is_visible()
 
-            username_form = page.get_by_placeholder('Username').fill(user_username)
-           
-            password_form = page.get_by_placeholder('Password').fill(user_password)
-            login_button = page.locator("button:has-text('Login')").click()
-            logging.info(f"\nUser created  and loged in:\n\n{user_username} and {user_password}\n ")
-            # time.sleep(4)
-            title = "User Dashboard"
-
-            assert page.get_by_text('title')
-
-            name = page.locator(".welcome-text:has-text('Welcome, noname')")
-            time.sleep(2)
-            assert name.is_visible()
-
-            browser.close()
+        
 
 
 

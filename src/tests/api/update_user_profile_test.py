@@ -9,6 +9,7 @@ from src.main.api.requests.admin_user_requester import AdminUserRequester
 from src.main.api.requests.login_user_requester import LoginUserRequester
 from src.main.api.requests.update_user_requester import UpdateProfileRequester
 from src.main.api.requests.get_profile_requester import GetProfileRequester
+from src.main.constants.roles import Roles
 
 import pytest
 import logging
@@ -20,7 +21,7 @@ class TestUpdateProfile():
     @pytest.mark.parametrize(
         "username, password, role, name",
         [(RandomData.get_username(), RandomData.get_password(),
-          "USER", RandomData.get_name())],
+          Roles.USER, RandomData.get_name())],
     )
     def test_update_profile_name(self, username, password, role, name):
         create_user_request = CreateUserRequest(

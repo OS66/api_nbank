@@ -8,12 +8,13 @@ from src.main.api.requests.admin_user_requester import AdminUserRequester
 from src.main.api.specs.request_spec import RequestSpec
 from src.main.api.specs.response_spec import ResponseSpec
 from src.main.api.generators.random_data import RandomData
+from src.main.constants.roles import Roles
 
 @pytest.mark.api
 class TestCreateUser:
     @pytest.mark.user
     def test_create_valid_user(self):
-        create_user_request = CreateUserRequest(username=RandomData.get_username(), password=RandomData.get_password(), role= "USER")
+        create_user_request = CreateUserRequest(username=RandomData.get_username(), password=RandomData.get_password(), role= Roles.USER)
         create_user_response = AdminUserRequester(
              RequestSpec.admin_auth_spec(),
              ResponseSpec.entity_was_created()
@@ -29,7 +30,7 @@ class TestCreateUser:
     @pytest.mark.invalid
     @pytest.mark.parametrize(
        'username, password, role, error_key, error_value',
-        [ ("", "verysTRongPassword33$", "USER", "username", "Username must contain only letters, digits, dashes, underscores, and dots")
+        [ ("", "verysTRongPassword33$", Roles.USER, "username", "Username must contain only letters, digits, dashes, underscores, and dots")
         ])
     def test_create_invalid_user(self, username, password, role, error_key, error_value):
         create_user_request = CreateUserRequest(username=username, password=password, role= role)

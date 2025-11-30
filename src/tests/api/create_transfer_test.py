@@ -19,12 +19,13 @@ from src.main.api.requests.admin_user_requester import AdminUserRequester
 from src.main.api.requests.get_accounts_requester import GetAccountsRequester
 
 from src.main.api.generators.random_data import RandomData
+from src.main.constants.roles import Roles
 
 
 class TestTransfer:
     @pytest.mark.test
     @pytest.mark.parametrize("username, password, role, amount,  transfer_amount",
-                             [(RandomData.get_username(), RandomData.get_password(), "USER", 600, 105)])
+                             [(RandomData.get_username(), RandomData.get_password(),Roles.USER, 600, 105)])
     def test_create_transfer(self, username, password, role, amount, transfer_amount):
 
         create_user_request = CreateUserRequest(username=username, password=password, role=role)
