@@ -22,6 +22,7 @@ from src.main.api.requests.login_user_requester import LoginUserRequester
 from src.main.api.requests.create_deposit_requester import CreateDepositRequester
 from src.main.api.models.create_deposit_request import CreateDepositRequest
 from src.main.api.models.create_deposit_response import CreateDepositResponse
+from src.main.constants.roles import Roles
 
 class TestDeposit():
 
@@ -29,7 +30,7 @@ class TestDeposit():
     @pytest.mark.parametrize(
         "username, password, role, balance",
         [(
-            RandomData.get_username(),RandomData.get_password(),"USER", RandomData.get_balance()
+            RandomData.get_username(),RandomData.get_password(),Roles.USER, RandomData.get_balance()
         )])
     def test_create_valid_deposit(self, username, password, role, balance):
         create_user_request = CreateUserRequest(username=username, password=password, role=role)
@@ -69,8 +70,8 @@ class TestDeposit():
     @pytest.mark.parametrize(
         "username, password, role, balance,error_key, error_value",
        [
-         (RandomData.get_username(), RandomData.get_password(), "USER", -508, 'balance', "Invalid account or amount"),
-         (RandomData.get_username(), RandomData.get_password(), "USER", "test",None, "Internal Server Error"),
+         (RandomData.get_username(), RandomData.get_password(), Roles.USER, -508, 'balance', "Invalid account or amount"),
+         (RandomData.get_username(), RandomData.get_password(), Roles.USER, "test", None, "Internal Server Error"),
                                                                                                      ],
         )
     def test_create_invalid_deposit(self, username, password, role, balance, error_key, error_value):

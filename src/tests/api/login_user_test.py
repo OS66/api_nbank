@@ -9,6 +9,7 @@ from src.main.api.requests.admin_user_requester import AdminUserRequester
 from src.main.api.specs.request_spec import RequestSpec
 from src.main.api.specs.response_spec import ResponseSpec
 from src.main.api.generators.random_data import RandomData
+from src.main.constants.roles import Roles
 
 
 
@@ -18,7 +19,7 @@ class TestLoginUser:
     @pytest.mark.parametrize(
         "username, password, role",
         [(
-            RandomData.get_username(),RandomData.get_password(),"USER"
+            RandomData.get_username(),RandomData.get_password(), Roles.USER
         )])
     def test_login_user(self, username:str, password:str, role:str):
         create_user_request = CreateUserRequest(username=username, password=password, role=role)
@@ -50,4 +51,4 @@ class TestLoginUser:
             ).post(login_admin_request)
     
         assert login_admin_response.username == login_admin_request.username
-        assert login_admin_response.role =="ADMIN"
+        assert login_admin_response.role == Roles.ADMIN

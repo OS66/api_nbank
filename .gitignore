@@ -136,3 +136,5 @@ __pycache__
 .idea/
 src/main/api/requests/user_requester.py
 src/сcheetsheeets.md
+__init__.py
+src/tests/ui/__init__.py
