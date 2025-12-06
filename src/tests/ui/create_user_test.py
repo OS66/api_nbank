@@ -10,6 +10,7 @@ from src.main.api.specs.request_spec import RequestSpec
 from src.main.api.specs.response_spec import ResponseSpec
 
 from src.main.constants.roles import Roles
+from src.main.constants.error_messages import Errors
 from src.main.ui.pages.login_page import LoginPage
 from src.main.ui.pages.user_panel import UserPanel
 from src.main.ui.pages.admin_panel import AdminPanel
@@ -65,9 +66,9 @@ class TestCreateUser:
         dialog = dialog_info.value
         message = dialog.message
 
-        assert "Failed to create user" in message
-        assert "Password must contain at least one digit" in message
-        assert "Username must contain only letters, digits, dashes, underscores, and dots" in message
+        assert Errors.FAILED_CREATE_USER in message
+        assert Errors.FAILED_PASSWORD_ONE_DIGIT in message
+        assert Errors.FAILED_PASSWORD in message
 
         dialog.accept()
 

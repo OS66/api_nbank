@@ -30,7 +30,7 @@ from src.main.ui.pages.login_page import LoginPage
 from src.main.ui.pages.user_panel import UserPanel
 from src.main.ui.pages.admin_panel import AdminPanel
 from src.main.constants.roles import Roles
-
+from src.main.constants.success_messages import Success
 
 
 class TestTransferUI:
@@ -94,7 +94,7 @@ class TestTransferUI:
         assert UserPanel(page).noname_title.is_visible()
 
         message = UserPanel(page).make_transfer(source_account_id,target_account_id, transfer_amount)
-        assert "Trannfer success" in message
+        assert Success.SUCCESS_TRANSFER in message
 
     @pytest.mark.trans_invalid
     @pytest.mark.parametrize(

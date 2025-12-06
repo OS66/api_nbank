@@ -8,6 +8,7 @@ from src.main.api.generators.random_data import RandomData
 from src.main.constants.roles import Roles
 from src.main.ui.pages.login_page import LoginPage
 from src.main.ui.pages.user_panel import UserPanel
+from src.main.constants.success_messages import Success
 
 
 
@@ -24,7 +25,7 @@ class TestUpdateProfileUI:
         user_panel=UserPanel(page).check_title_noname()
 
         message_updated  = user_panel.update_name(new_name)
-        assert "Name updated successfully!" in message_updated
+        assert Success.SUCCESS_NAME_UPDATED in message_updated
 
         message = user_panel.check_updated_name(new_name)
         assert new_name in message 

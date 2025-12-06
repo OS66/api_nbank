@@ -11,9 +11,11 @@ from src.main.api.models.create_user_request import CreateUserRequest
 
 
 from src.main.constants.roles import Roles
+from src.main.constants.success_messages import Success
 from src.main.ui.pages.login_page import LoginPage
 from src.main.ui.pages.user_panel import UserPanel
 from src.main.ui.pages.admin_panel import AdminPanel
+
 
 
 class TestCreateAccount:
@@ -39,7 +41,7 @@ class TestCreateAccount:
         user_panel = UserPanel(page).check_title_noname()
 
         message = user_panel.create_account()
-        assert "New Account Created!" in message
+        assert Success.SUCCESS_ACCOUNT_CREATED in message
         logging.info(message)
 
         account_number = user_panel.check_account_number(message)

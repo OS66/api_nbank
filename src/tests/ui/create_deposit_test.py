@@ -15,6 +15,7 @@ from src.main.api.requests.admin_user_requester import AdminUserRequester
 
 from src.main.constants.roles import Roles
 from src.main.ui.pages.login_page import LoginPage
+from src.main.constants.error_messagess import Errors
 from src.main.ui.pages.user_panel import UserPanel
 from src.main.ui.pages.admin_panel import AdminPanel
 
@@ -52,7 +53,7 @@ class TestCreateDeposit:
         user_panel = UserPanel(page).check_title_noname()
         message  = user_panel.create_deposit(balance)
 
-        assert "Successfully deposited" in message, "There is no 'Successfully deposited' message "
+        assert Success.SUCCESS_DEPOSITED in message, "There is no 'Successfully deposited' message "
 
 
 
@@ -91,7 +92,7 @@ class TestCreateDeposit:
         LoginPage(page).login(username,password)
         user_panel = UserPanel(page).check_title_noname()
         message  = user_panel.create_deposit(balance)
-        assert "Please deposit less or equal to 5000$" in message, "Message was not 'Please deposit less or equal to 5000$'"
+        assert Errors.ERROR_DEPOSIT_LIMIT in message, "Message was not as expected"
        
 
 
